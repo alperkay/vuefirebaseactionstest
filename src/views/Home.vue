@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>just testin!</h1>
+    <h1>deploying this app on firebase was a breeze!</h1>
   </div>
 </template>
 
