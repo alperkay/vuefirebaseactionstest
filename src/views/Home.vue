@@ -57,14 +57,7 @@ export default class Home extends Vue {
     for (let i = 0; i < touches.length; i++) {
       this.ongoingTouches.push(this.copyTouch(touches[i]));
       this.ctx.beginPath();
-      this.ctx.arc(
-        touches[i].pageX,
-        touches[i].pageY,
-        4,
-        0,
-        2 * Math.PI,
-        false
-      ); // a circle at the start
+      this.ctx.lineCap = "round";
       this.ctx.fillStyle = "black";
       this.ctx.fill();
     }
@@ -78,13 +71,14 @@ export default class Home extends Vue {
       const idx = this.ongoingTouchIndexById(touches[i].identifier);
 
       if (idx >= 0) {
+        this.ctx.lineCap = "round";
         this.ctx.beginPath();
         this.ctx.moveTo(
           this.ongoingTouches[idx].pageX,
           this.ongoingTouches[idx].pageY
         );
         this.ctx.lineTo(touches[i].pageX, touches[i].pageY);
-        this.ctx.lineWidth = 4;
+        this.ctx.lineWidth = 10;
         this.ctx.strokeStyle = "black";
         this.ctx.stroke();
         this.ongoingTouches.splice(idx, 1, this.copyTouch(touches[i])); // swap in the new touch record
@@ -100,6 +94,7 @@ export default class Home extends Vue {
       const idx = this.ongoingTouchIndexById(touches[i].identifier);
 
       if (idx >= 0) {
+        this.ctx.lineCap = "round";
         this.ctx.lineWidth = 4;
         this.ctx.fillStyle = "black";
         this.ctx.beginPath();
@@ -108,7 +103,6 @@ export default class Home extends Vue {
           this.ongoingTouches[idx].pageY
         );
         this.ctx.lineTo(touches[i].pageX, touches[i].pageY);
-        this.ctx.fillRect(touches[i].pageX - 4, touches[i].pageY - 4, 8, 8); // and a square at the end
         this.ongoingTouches.splice(idx, 1); // remove it; we're done
       }
     }
