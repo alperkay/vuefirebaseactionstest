@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <h1>is this deployin? it shouldn't!</h1>
+    <h2>just checkin</h2>
   </div>
 </template>
 
