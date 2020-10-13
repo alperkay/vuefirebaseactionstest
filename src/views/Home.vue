@@ -10,13 +10,13 @@
 </template>
 
 <script lang="ts">
-import { CanvasHTMLAttributes } from "vue";
-import { Options, Vue } from "vue-class-component";
+import { Vue } from "vue-class-component";
 
 export default class Home extends Vue {
   private painting = false;
   private canvas: any;
   private ctx: any;
+  private ongoingTouches: any[] = [];
 
   public mounted() {
     this.canvas = document.querySelector("#canvas");
@@ -25,9 +25,9 @@ export default class Home extends Vue {
     this.canvas.height = window.innerHeight;
     this.canvas.width = window.innerWidth;
 
-    this.canvas.addEventListener("touchstart", this.startPosition);
-    this.canvas.addEventListener("touchend", this.finishedPosition);
-    this.canvas.addEventListener("touchmove", this.draw);
+    this.canvas.addEventListener("touchstart", this.handleStart);
+    this.canvas.addEventListener("touchend", this.handleEnd);
+    this.canvas.addEventListener("touchmove", this.handleMove);
   }
 
   private startPosition(e: MouseEvent) {
@@ -49,6 +49,84 @@ export default class Home extends Vue {
     this.ctx.stroke();
     this.ctx.beginPath();
     this.ctx.moveTo(e.clientX, e.clientY);
+  }
+
+  private handleStart(evt: any) {
+    evt.preventDefault();
+    const touches = evt.changedTouches;
+    for (let i = 0; i < touches.length; i++) {
+      this.ongoingTouches.push(this.copyTouch(touches[i]));
+      this.ctx.beginPath();
+      this.ctx.arc(
+        touches[i].pageX,
+        touches[i].pageY,
+        4,
+        0,
+        2 * Math.PI,
+        false
+      ); // a circle at the start
+      this.ctx.fillStyle = "black";
+      this.ctx.fill();
+    }
+  }
+
+  private handleMove(evt: any) {
+    evt.preventDefault();
+    const touches = evt.changedTouches;
+
+    for (let i = 0; i < touches.length; i++) {
+      const idx = this.ongoingTouchIndexById(touches[i].identifier);
+
+      if (idx >= 0) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(
+          this.ongoingTouches[idx].pageX,
+          this.ongoingTouches[idx].pageY
+        );
+        this.ctx.lineTo(touches[i].pageX, touches[i].pageY);
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = "black";
+        this.ctx.stroke();
+        this.ongoingTouches.splice(idx, 1, this.copyTouch(touches[i])); // swap in the new touch record
+      }
+    }
+  }
+
+  private handleEnd(evt: any) {
+    evt.preventDefault();
+    const touches = evt.changedTouches;
+
+    for (let i = 0; i < touches.length; i++) {
+      const idx = this.ongoingTouchIndexById(touches[i].identifier);
+
+      if (idx >= 0) {
+        this.ctx.lineWidth = 4;
+        this.ctx.fillStyle = "black";
+        this.ctx.beginPath();
+        this.ctx.moveTo(
+          this.ongoingTouches[idx].pageX,
+          this.ongoingTouches[idx].pageY
+        );
+        this.ctx.lineTo(touches[i].pageX, touches[i].pageY);
+        this.ctx.fillRect(touches[i].pageX - 4, touches[i].pageY - 4, 8, 8); // and a square at the end
+        this.ongoingTouches.splice(idx, 1); // remove it; we're done
+      }
+    }
+  }
+
+  private copyTouch({ identifier, pageX, pageY }: any) {
+    return { identifier, pageX, pageY };
+  }
+
+  private ongoingTouchIndexById(idToFind: number) {
+    for (let i = 0; i < this.ongoingTouches.length; i++) {
+      const id = this.ongoingTouches[i].identifier;
+
+      if (id == idToFind) {
+        return i;
+      }
+    }
+    return -1; // not found
   }
 }
 </script>
