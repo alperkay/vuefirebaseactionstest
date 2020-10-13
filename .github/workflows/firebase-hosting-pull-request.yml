@@ -9,11 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm ci && npm run test:unit
+        if: success()
   build_and_preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        if: ${{ success() }}
       - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
