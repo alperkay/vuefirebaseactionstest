@@ -9,12 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm ci && npm run test:unit
-        if: success()
   build_and_preview:
+    needs: unit_test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci && npm run build
+      - run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
