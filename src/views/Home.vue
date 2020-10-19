@@ -1,14 +1,27 @@
 <template>
   <div class="home">
-    <h1>is this deployin? it shouldn't!</h1>
+    <canvas v-drawable id="canvas"></canvas>
+    <input class="size-input" type="number" v-model="size" placeholder="size" />
+    <p>luna</p>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { Vue } from "vue-class-component";
 
-@Options({
-  components: {},
-})
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  private size = 5;
+}
 </script>
+
+<style lang="scss">
+#canvas {
+  border: 2px solid black;
+}
+
+.size-input {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+}
+</style>
