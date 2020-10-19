@@ -2,6 +2,7 @@
   <div class="home">
     <canvas v-drawable id="canvas"></canvas>
     <input class="size-input" type="number" v-model="size" placeholder="size" />
+    <p>luna</p>
   </div>
 </template>
 
